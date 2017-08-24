@@ -1,0 +1,27 @@
+LoadPackage("CTblLib");
+G:=SymmetricGroup(6);
+D:=SylowSubgroup(G,3);
+H:=Normalizer(G,D);
+ctG:=CharacterTable("A6");
+ctH:=CharacterTable(H);
+pbG:=PrimeBlocks(ctG, 3);
+pbH:=PrimeBlocks(ctH, 3);
+blG:=Positions(pbG.block, 1);
+blH:=Positions(pbH.block, 1);
+mctG:=ctG mod 3;
+mctH:=ctH mod 3;
+QG:=DecompositionMatrix(mctG, 1);
+QH:=DecompositionMatrix(mctH, 1);
+#Display(ctG, rec(chars:=blG));
+#Display(ctH, rec(chars:=blH));
+Print("The normalizer of the Sylow 3-subgroup of A6 is the group ",IdGroup(H),"\n");
+Print("Brauer character table of the principal block of A6\n");
+Display(mctG, rec(chars:=BlocksInfo(mctG)[1].modchars));
+Print("Brauer character table of the principal block of the normalizer\n");
+Display(mctH, rec(chars:=BlocksInfo(mctH)[1].modchars));
+Print("Cartan matrix of the principal block of A6\n");
+Display(TransposedMat(QG)*QG);
+Print("Cartan matrix of the principal block of the normalizer\n");
+Display(TransposedMat(QH)*QH);
+QUIT_GAP();
+
