@@ -13,6 +13,15 @@ BlockIdentify:=function(dm, nb)
 	return 0;
 end;
 
+#The BlckId function is crude, but sufficient for alternating and symmetric groups
+BlckId:=function(Q)
+	local B;
+	B:="BX";
+	if Size(Q)=6 and Size(Q[1])=4 then B:=4;fi;
+	if Size(Q)=9 and Size(Q[1])=5 then B:=8;fi;
+	return B;
+end;
+
 p:=3;
 #The Morita equivalence classes of the normal blocks. Format: [GroupID, NrBlock, k(B), l(B), elementary divisors 1, data is unique?]
 nblocks:=[
@@ -30,7 +39,7 @@ nblocks:=[
 ];
 
 #A list of different Morita equivalence classes we find by investigating (modular) character tables.
-#An entry consists of [DecompositionMatrix,CartanMatrix Suspected derived equivalence class, LIST], where LIST is a list of groups possibly having a ME block. LIST has entries [GroupID, BlockNr]
+#An entry consists of [DecompositionMatrix, CartanMatrix, Suspected derived equivalence class, LIST], where LIST is a list of groups possibly having a ME block. LIST has entries [GroupID, BlockNr]
 mc:=[];
 for entry in nblocks do
 	ct:=CharacterTable(SmallGroup(entry[1]));
@@ -38,6 +47,48 @@ for entry in nblocks do
 	Q:=DecompositionMatrix(mct, entry[2]);
 	C:=TransposedMat(Q)*Q;
 	Add(mc, [Q,C, BlockIdentify(Q, nblocks), [ [entry[1], entry[2]] ] ]);
+od;
+
+#Consider all symmetric and alternating groups up to n=18. For bigger groups modular character tables are not available.
+for n in [2*p..18] do
+	ctS:=CharacterTable(ReplacedString("SB", "B", String(n)));
+	ctA:=CharacterTable(ReplacedString("AB", "B", String(n)));
+	pbS:=PrimeBlocks(ctS, p);
+	pbA:=PrimeBlocks(ctA, p);	
+	mctS:=ctS mod p;
+	mctA:=ctA mod p;
+	#Print("S",n," ",pbS.defect, "\n");
+	#Print("A",n," ",pbA.defect, "\n");
+	for i in [1..Length(pbS.defect)] do
+		if pbS.defect[i]<>2 then continue;fi;
+		Q:=DecompositionMatrix(mctS, i);
+		C:=TransposedMat(Q)*Q;
+		match:=false;
+		for entry in mc do
+			if TransformingPermutations(C, entry[2])<>fail then
+				Add(entry[4], [ReplacedString("S_B", "B", String(n)),i]);
+				match:=true;
+			fi;
+		od;
+		if match=false then
+			Add(mc, [Q, C, BlckId(Q), [[ReplacedString("S_B", "B", String(n)), i]] ]);
+		fi;
+	od;
+	for i in [1..Length(pbA.defect)] do
+		if pbA.defect[i]<>2 then continue;fi;
+		Q:=DecompositionMatrix(mctA, i);
+		C:=TransposedMat(Q)*Q;
+		match:=false;
+		for entry in mc do
+			if TransformingPermutations(C, entry[2])<>fail then
+				Add(entry[4], [ReplacedString("A_B", "B", String(n)),i]);
+				match:=true;
+			fi;
+		od;
+		if match=false then
+			Add(mc, [Q, C, BlckId(Q), [[ReplacedString("A_B", "B", String(n)), i]] ]);
+		fi;
+	od;
 od;
 
 for x in AllCharacterTableNames(IsDuplicateTable, false) do
@@ -59,7 +110,7 @@ for x in AllCharacterTableNames(IsDuplicateTable, false) do
 		if match=false then
 			Add(mc, [Q,C, BlockIdentify(Q, nblocks), [[x, i]] ]);
 		fi;
-        od;
+       od;
     fi;
 od;
 

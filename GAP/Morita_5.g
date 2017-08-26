@@ -13,6 +13,14 @@ BlockIdentify:=function(dm, nb)
 	return 0;
 end;
 
+BlckId:=function(Q)
+	local B;
+	B:="BX";
+	if Size(Q)=13 and Size(Q[1])=10 then B:=28;fi;
+	if Size(Q)=20 and Size(Q[1])=14 then B:=36;fi;
+	return B;
+end;
+
 p:=5;
 #The Morita equivalence classes of the normal blocks. Format: [GroupID, NrBlock, k(B), l(B), elementary divisors 1, data is unique?]
 nblocks:=[
@@ -74,6 +82,48 @@ mct:=ct mod p;
 Q:=DecompositionMatrix(mct, 1);
 C:=TransposedMat(Q)*Q;
 Add(mc, [Q,C, BlockIdentify(Q, nblocks), [ ["PG2519", 1] ] ]);
+
+#Consider all symmetric and alternating groups up to n=18. For bigger groups modular character tables are not available.
+for n in [2*p..18] do
+	ctS:=CharacterTable(ReplacedString("SB", "B", String(n)));
+	ctA:=CharacterTable(ReplacedString("AB", "B", String(n)));
+	pbS:=PrimeBlocks(ctS, p);
+	pbA:=PrimeBlocks(ctA, p);	
+	mctS:=ctS mod p;
+	mctA:=ctA mod p;
+	#Print("S",n," ",pbS.defect, "\n");
+	#Print("A",n," ",pbA.defect, "\n");
+	for i in [1..Length(pbS.defect)] do
+		if pbS.defect[i]<>2 then continue;fi;
+		Q:=DecompositionMatrix(mctS, i);
+		C:=TransposedMat(Q)*Q;
+		match:=false;
+		for entry in mc do
+			if TransformingPermutations(C, entry[2])<>fail then
+				Add(entry[4], [ReplacedString("S_B", "B", String(n)),i]);
+				match:=true;
+			fi;
+		od;
+		if match=false then
+			Add(mc, [Q, C, BlckId(Q), [[ReplacedString("S_B", "B", String(n)), i]] ]);
+		fi;
+	od;
+	for i in [1..Length(pbA.defect)] do
+		if pbA.defect[i]<>2 then continue;fi;
+		Q:=DecompositionMatrix(mctA, i);
+		C:=TransposedMat(Q)*Q;
+		match:=false;
+		for entry in mc do
+			if TransformingPermutations(C, entry[2])<>fail then
+				Add(entry[4], [ReplacedString("A_B", "B", String(n)),i]);
+				match:=true;
+			fi;
+		od;
+		if match=false then
+			Add(mc, [Q, C, BlckId(Q), [[ReplacedString("A_B", "B", String(n)), i]] ]);
+		fi;
+	od;
+od;
 
 for x in AllCharacterTableNames(IsDuplicateTable, false) do
     ct:=CharacterTable(x);
