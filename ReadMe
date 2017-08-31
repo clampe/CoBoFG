@@ -2,5 +2,7 @@ These folders contain supplementary calculations for Christoph Lampe's master th
 
 The programs were tested to run on:
 
-- GAP version 4.8.7 released on 24th of March 2017
-- MAGMA V2.23-2 released on 31st of July 2017
+- GAP version 4.8.7
+- MAGMA V2.23-3
+
+The output of these programs does not always exactly match the output used for the thesis verbatim, but is equivalent up to labeling or choosing other generators. The choices made in the programs are consistent for all files.
