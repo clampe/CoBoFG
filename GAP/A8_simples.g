@@ -1,5 +1,5 @@
 LoadPackage("CTblLib");
-G:=AlternatingGroup(6);
+G:=AlternatingGroup(8);
 D:=SylowSubgroup(G,3);
 H:=Normalizer(G,D);
 ctG:=CharacterTable("A8");

@@ -2,7 +2,7 @@ LoadPackage("CTblLib");
 G:=SymmetricGroup(6);
 D:=SylowSubgroup(G,3);
 H:=Normalizer(G,D);
-ctG:=CharacterTable("A6");
+ctG:=CharacterTable("S6");
 ctH:=CharacterTable(H);
 pbG:=PrimeBlocks(ctG, 3);
 pbH:=PrimeBlocks(ctH, 3);

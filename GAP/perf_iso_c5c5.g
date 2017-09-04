@@ -1,3 +1,4 @@
+#Tests the separation condition for a given perm/signs for the selected characters
 Separation:=function(ctG, ctH, blG, blH, sinG, sinH, regG, regH, perm, sign, selection)
 	local i, j, k, mu;
 	for i in sinG do
@@ -12,6 +13,7 @@ Separation:=function(ctG, ctH, blG, blH, sinG, sinH, regG, regH, perm, sign, sel
 	return true;
 end;
 
+#Tests the given polynomial with indeterminates as roots of unity for being an algebraic integer
 IntCoeffTest:=function(poly)
 	local i, coeff, cshort;
 	coeff:=CoefficientsOfUnivariatePolynomial(poly);
@@ -25,6 +27,7 @@ IntCoeffTest:=function(poly)
 	return true;
 end;
 
+#Tests if the given perm/sign combination satisfies the integrality condition
 Integrality:=function(perm, sign)
 	local x, b, c, d, e, f, cb, cc, sd, me, mf, valuesG, valuesH, mu, i, v, w;
 	x:=Indeterminate(CF(5), "x");
@@ -52,6 +55,7 @@ Integrality:=function(perm, sign)
 	return true;
 end;
 
+#Initialize the present situation
 H:=SmallGroup(75, 2);
 G:=SmallGroup(600, 61);
 ctG:=CharacterTable(G);
@@ -61,19 +65,27 @@ pbH:=PrimeBlocks(ctH, 5);
 blG:=Positions(pbG.block, 2);
 blH:=Positions(pbH.block, 1);
 
+Display(ctH, rec(chars:=blH));
+Display(ctG, rec(chars:=blG));
+
 sinH:=[3,4,6,7,8,9,10,11];
 regH:=[1,2,5];
 sinG:=[19,20,21,22];
 regG:=[1,6,7,12,13,18,23,24,25];
-selection:=[8,9,10,11];
 
-Display(ctG, rec(chars:=blG));
-Display(ctH, rec(chars:=blH));
+#Select some characters with many zero entries to simplyfy calculations
+selection:=[8,9,10,11];
+Print("Selected characters of G: ");
+for i in selection do
+	Print(blG[i]," ");
+od;
+Print("\n");
 
 images:=Combinations([1,2,3,4,5,6,7,8,9,10,11], 4);	#Alle moeglichen Isometrien beschraenkt auf 18,19,20,21 und sortiert ohne Vorzeichen
 signs:=Tuples([-1,1],4);				#Alle moeglichen Vorzeichenkombinationen
 passed:=[];						#Hier sammel ich alle Permutationen bei denen \mu(g,h)=0 fuer g aus selG und h aus selH(d.h. mit Sicherheit eine alg. Zahl)
 
+#Now we check the conditions. In contrast to the case of C_3 x C_3 checking for algebraic integers is now automated
 for image in images do
 	for perm in Arrangements(image, Length(image)) do
 		for sign in signs do
@@ -81,5 +93,7 @@ for image in images do
 		od;
 	od;
 od;
-x:=Indeterminate(CF(5), "x");
-#QUIT_GAP();
+Print("List of perm/signs that satisfy the separation as well as the Integrality condition:\n");
+Print(passed,"\n");
+Print("If it is empty, then there are none.\n");
+QUIT_GAP();

@@ -19,8 +19,8 @@ irr:=SimpleModules(B);
 l:=Length(irr);
 #We assume: Thesis <-> Calculation
 # 		 0 <-> [1,0,0,0]
-# 		 1 <-> [0,0,1,0]
-# 		 2 <-> [0,1,0,0]
+# 		 1 <-> [0,1,0,0]
+# 		 2 <-> [0,0,1,0]
 # 		 3 <-> [0,0,0,1]
 #sim:=[0, 2, 1, 3];
 Print("\nSimples\n");
@@ -37,7 +37,7 @@ od;
 res:=[0,0,0,0];
 coordinates:=[ [1,1,8], [2,2,8], [4,4,8], [3,3,5] ];
 n:=[0,0,0,1];
-#Print("\nMorphisms between Projectives\n");
+#Morphisms between Projectives
 for i in [1..l] do
 	for j in [1..l] do
 		#Print("\nHom(",i,",",j,")\n");
@@ -49,26 +49,36 @@ for i in [1..l] do
 		od;
 	od;
 od;
+
 Print("\nRestrictions\n");
 for i in [1..l] do
+	Print("S_",i-1,"\n");
 	Print(RadicalSeries(res[i]),"\n");
+	Print(SocleSeries(res[i]),"\n");
 od;
 
 #Compile the simple minded collection
-Print("\nSimple minded collection by their radical series\n");
 SMC:=[];
+Print("\nCalculating Szyzygies\n");
 for i in [1..l] do
 	M:=res[i];	
 	for j in [1..n[i]] do
 		M:=1stSyzygy(M);
 	od;
 	Add(SMC, M);
+od;
+Print("\nSimple minded collection by their radical and socle series\n");
+for i in [1..l] do
+	M:=SMC[i];
+	Print("X_",i-1,"\n");
 	Print(RadicalSeries(M),"\n");
+	Print(SocleSeries(M),"\n");
 od;
 
 #Check the conditions posed by the theorem on the SMC
+Print("\nChecking conditions (i) and (ii)\n");
 pass:=true;
-Print("\n(i)\n");
+Print("(i) ");
 for i in [1..l] do
 	M:=SMC[i];
 	if Length(HomOverAlgebra(M,M))<> 1 then pass:=fail;fi;
@@ -76,7 +86,7 @@ for i in [1..l] do
 od;
 if pass=true then Print("true\n");fi;
 pass:=true;
-Print("\n(ii)\n");
+Print("(ii) ");
 for i in [1..l] do
 	for j in [1..l] do
 		M:=SMC[i];
@@ -88,5 +98,4 @@ for i in [1..l] do
 	od;
 od;
 if pass=true then Print("true\n");fi;
-Print("\n(iii)\n");
 QUIT_GAP();
